@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Slf4j
 @RestController
@@ -63,6 +66,23 @@ public class EmployeeController {
 //        1. clean userIde in Session
         request.getSession().removeAttribute("employee");
         return R.success("Logout successfully");
+    }
+
+    @PostMapping
+    public R<String> save(HttpServletRequest request,@RequestBody  Employee employee){
+        log.info("新增的员工信息：{}", employee.toString());
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+
+        employee.setCreateTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        employee.setUpdateTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+
+        Long empId = (Long)request.getSession().getAttribute("employee");
+
+        employee.setCreateUser(empId);
+        employee.setUpdateUser(empId);
+
+        employeeService.save(employee);
+        return R.success("Save new Employee successfully");
     }
 
 }
