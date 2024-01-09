@@ -109,8 +109,10 @@ public class EmployeeController {
         return R.success(pageInfo);
     }
 
+
+//    common method for every update function
     @PutMapping
-    public R<String> changeStatus(HttpServletRequest request,@RequestBody Employee employee){
+    public R<String> update(HttpServletRequest request,@RequestBody Employee employee){
         System.out.println("hi0 "+employee.getStatus());
         log.info(employee.toString());
         System.out.println("hi1 "+employee.getStatus());
@@ -124,6 +126,20 @@ public class EmployeeController {
         return R.success("successfully edited employee's status");
 
     }
+
+    @GetMapping("/{id}")
+    public R<Employee> getById(@PathVariable Long id){
+        log.info("id of current searching employee");
+        Employee employee = employeeService.getById(id);
+        if(employee!=null){
+
+            return R.success(employee);
+        }
+        return R.error("No such employee");
+    }
+
+
+
 
 
 
