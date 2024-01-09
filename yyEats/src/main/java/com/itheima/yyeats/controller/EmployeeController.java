@@ -1,6 +1,7 @@
 package com.itheima.yyeats.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.yyeats.common.R;
 import com.itheima.yyeats.entity.Employee;
@@ -107,6 +108,23 @@ public class EmployeeController {
 
         return R.success(pageInfo);
     }
+
+    @PutMapping
+    public R<String> changeStatus(HttpServletRequest request,@RequestBody Employee employee){
+        System.out.println("hi0 "+employee.getStatus());
+        log.info(employee.toString());
+        System.out.println("hi1 "+employee.getStatus());
+        Long empId= (Long)request.getSession().getAttribute("employee");
+//      employee parameter has converted status
+        employee.setUpdateTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        employee.setUpdateUser(empId);
+        System.out.println("hi2 "+employee.getStatus());
+        employeeService.updateById(employee);
+
+        return R.success("successfully edited employee's status");
+
+    }
+
 
 
 }
