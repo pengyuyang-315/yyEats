@@ -2,6 +2,7 @@ package com.itheima.yyeats.filter;
 
 import cn.hutool.core.text.AntPathMatcher;
 import com.alibaba.fastjson.JSON;
+import com.itheima.yyeats.common.BaseContext;
 import com.itheima.yyeats.common.R;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +54,11 @@ public class LoginCheckFilter implements Filter {
 //        4. check login status, if so, go ahead
        if( request.getSession().getAttribute("employee")!=null) {
             log.info("user already login,id is{}",request.getSession().getAttribute("employee"));
+
+            Long empId = (Long) request.getSession().getAttribute("employee");
+
+           BaseContext.setCurrentId(empId);
+
             filterChain.doFilter(request,response);
             return;
        }

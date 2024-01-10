@@ -73,13 +73,13 @@ public class EmployeeController {
         log.info("新增的员工信息：{}", employee.toString());
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
-        employee.setCreateTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-        employee.setUpdateTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-
-        Long empId = (Long)request.getSession().getAttribute("employee");
-
-        employee.setCreateUser(empId);
-        employee.setUpdateUser(empId);
+//        employee.setCreateTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+//        employee.setUpdateTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+//
+//        Long empId = (Long)request.getSession().getAttribute("employee");
+//
+//        employee.setCreateUser(empId);
+//        employee.setUpdateUser(empId);
 
         employeeService.save(employee);
         return R.success("Save new Employee successfully");
