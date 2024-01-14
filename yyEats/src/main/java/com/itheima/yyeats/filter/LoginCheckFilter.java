@@ -35,12 +35,13 @@ public class LoginCheckFilter implements Filter {
 
         log.info("Intercepted the request:{}",requestURI);
 
-//        2. check whether need to be checj
+//        2. check whether need to be checked
         String [] urls =new String[]{
                 "/employee/login",
-                "employee/logout",
+                "/employee/logout",
                 "/backend/**",
-                "/front/**"
+                "/front/**",
+                "/common/**"
         };
         boolean check = check(urls,requestURI);
 
