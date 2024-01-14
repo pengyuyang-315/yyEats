@@ -6,10 +6,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author 安逸i
- * @version 1.0
- */
+
 @Data
 public class DishDto extends Dish {
 
