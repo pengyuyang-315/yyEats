@@ -41,7 +41,9 @@ public class LoginCheckFilter implements Filter {
                 "/employee/logout",
                 "/backend/**",
                 "/front/**",
-                "/common/**"
+                "/common/**",
+                "/user/sendMsg",
+                "/user/login"
         };
         boolean check = check(urls,requestURI);
 
@@ -52,7 +54,7 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
-//        4. check login status, if so, go ahead
+//        4-1. check login status, if so, go ahead
        if( request.getSession().getAttribute("employee")!=null) {
             log.info("user already login,id is{}",request.getSession().getAttribute("employee"));
 
@@ -63,6 +65,17 @@ public class LoginCheckFilter implements Filter {
             filterChain.doFilter(request,response);
             return;
        }
+        //        4-2. check login status, if so, go ahead
+        if( request.getSession().getAttribute("user")!=null) {
+            log.info("user already login,id is{}",request.getSession().getAttribute("user"));
+
+            Long userId = (Long) request.getSession().getAttribute("user");
+
+            BaseContext.setCurrentId(userId);
+
+            filterChain.doFilter(request,response);
+            return;
+        }
 
 //        5. if not login, return no login
         log.info("user not login");

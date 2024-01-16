@@ -1,6 +1,8 @@
 package com.itheima.yyeats.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.itheima.yyeats.common.CustomException;
 import com.itheima.yyeats.dto.SetmealDto;
 import com.itheima.yyeats.entity.Setmeal;
 import com.itheima.yyeats.entity.SetmealDish;
@@ -40,4 +42,26 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
 //        save the information of relation between combo and dish
         setmealDishService.saveBatch(setmealDishes);
     }
+
+    @Transactional
+    public void removeWithDish(List<Long> ids) {
+//        查询套餐状态
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(Setmeal::getId,ids);
+        queryWrapper.eq(Setmeal::getStatus,1);
+        int count = this.count(queryWrapper);
+//        如果不行 抛出异常
+        if(count>0){
+            throw new CustomException("Comba is in sell, cannot delete");
+        }
+//        如果可以 删除套餐数据
+        this.removeByIds(ids);
+//        删除关系表数据 setmeal_dish
+        LambdaQueryWrapper<SetmealDish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(SetmealDish::getSetmealId,ids);
+        setmealDishService.remove(lambdaQueryWrapper);
+
+    }
+
+
 }
