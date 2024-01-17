@@ -1,5 +1,6 @@
 package com.itheima.yyeats.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itheima.yyeats.common.R;
 import com.itheima.yyeats.entity.User;
 import com.itheima.yyeats.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * @param
@@ -43,4 +45,33 @@ public class UserController {
 
     }
 
+    @PostMapping("/login")
+    public R<User> login(@RequestBody Map map, HttpSession session){
+
+//        get phoneNumber
+        String phone = map.get("phone").toString();
+//        get validation code
+        String code = map.get("code").toString();
+//        from session get code
+        Object codeInSession = session.getAttribute(phone);
+//        compare codes
+        if(codeInSession!=null &&  codeInSession.equals(code)){
+            //        if successful, login
+
+            //   check whether phone exists
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(User::getPhone,phone);
+            User user = userService.getOne(queryWrapper);
+            if(user == null){
+                user = new User();
+                user.setPhone(phone);
+                user.setStatus(1);
+                userService.save(user);
+            }
+            session.setAttribute("user",user.getId());
+            return R.success(user);
+        }
+
+        return R.error("failed");
+    }
 }
