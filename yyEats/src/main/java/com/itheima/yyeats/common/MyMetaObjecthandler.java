@@ -21,11 +21,24 @@ public class MyMetaObjecthandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         log.info("insert...common part");
         log.info(metaObject.toString());
-        metaObject.setValue("createTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-        metaObject.setValue("updateTime",Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        if (metaObject.hasSetter("createTime")) {
+            metaObject.setValue("createTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        }
 
-        metaObject.setValue("createUser", BaseContext.getCurrentId());
-        metaObject.setValue("updateUser", BaseContext.getCurrentId());
+//        metaObject.setValue("createTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+//        metaObject.setValue("updateTime",Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        if (metaObject.hasSetter("updateTime")) {
+            metaObject.setValue("updateTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        }
+        if(metaObject.hasSetter("createUser")){
+            metaObject.setValue("createUser", BaseContext.getCurrentId());
+
+        }
+//        metaObject.setValue("createUser", BaseContext.getCurrentId());
+        if(metaObject.hasSetter("updateUser")){
+            metaObject.setValue("updateUser", BaseContext.getCurrentId());
+        }
+//        metaObject.setValue("updateUser", BaseContext.getCurrentId());
     }
 
     @Override

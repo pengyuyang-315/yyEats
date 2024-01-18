@@ -6,6 +6,7 @@ import com.itheima.yyeats.common.R;
 import com.itheima.yyeats.dto.DishDto;
 import com.itheima.yyeats.entity.Category;
 import com.itheima.yyeats.entity.Dish;
+import com.itheima.yyeats.entity.DishFlavor;
 import com.itheima.yyeats.service.CategoryService;
 import com.itheima.yyeats.service.DishFlavorService;
 import com.itheima.yyeats.service.DishService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @param
@@ -86,16 +88,43 @@ public class DishController {
         return R.success("Successfully updated dish");
     }
 
-    @GetMapping("/list")
-    public R<List<Dish>> list(Dish dish){
-        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(dish.getCategoryId()!=null,Dish::getCategoryId,dish.getCategoryId());
-        queryWrapper.eq(Dish::getStatus,1);
-        queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+//    @GetMapping("/list")
+//    public R<List<Dish>> list(Dish dish){
+//        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+//        queryWrapper.eq(dish.getCategoryId()!=null,Dish::getCategoryId,dish.getCategoryId());
+//        queryWrapper.eq(Dish::getStatus,1);
+//        queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+//
+//        List<Dish> list = dishService.list(queryWrapper);
+//        return R.success(list);
+//    }
+@GetMapping("/list")
+public R<List<DishDto>> list(Dish dish){
+    LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+    queryWrapper.eq(dish.getCategoryId()!=null,Dish::getCategoryId,dish.getCategoryId());
+    queryWrapper.eq(Dish::getStatus,1);
+    queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
 
-        List<Dish> list = dishService.list(queryWrapper);
-        return R.success(list);
-    }
+    List<Dish> list = dishService.list(queryWrapper);
+    List<DishDto> dishDtoList = list.stream().map((item->{
+        DishDto dishDto = new DishDto();
+        BeanUtils.copyProperties(item,dishDto);
+        Long categoryId = item.getCategoryId();
+        Category category = categoryService.getById(categoryId);
+        if(category!=null){
+            String categoryName = category.getName();
+            dishDto.setCategoryName(categoryName);
+        }
+        Long dishId = item.getId();
+        LambdaQueryWrapper<DishFlavor> queryWrapper1 = new LambdaQueryWrapper<>();
+        queryWrapper1.eq(DishFlavor::getDishId,dishId);
+        List<DishFlavor> list1 = dishFlavorService.list(queryWrapper1);
+
+        dishDto.setFlavors(list1);
+        return dishDto;
+    })).collect(Collectors.toList());
+    return R.success(dishDtoList);
+}
 
 
 }
