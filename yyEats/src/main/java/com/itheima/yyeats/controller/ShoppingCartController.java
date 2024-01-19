@@ -70,4 +70,6 @@ public class ShoppingCartController {
         shoppingCartService.remove(queryWrapper);
         return R.success("clean successfully");
     }
+
+
 }
